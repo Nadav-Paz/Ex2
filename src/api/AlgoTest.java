@@ -2,6 +2,7 @@ package api;
 
 import static org.junit.Assert.*;
 
+//import java.lang.annotation.*;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,7 +12,7 @@ public class AlgoTest
 {
 
 	@Test
-	public void TestA() 
+	public void TestA()
 	{
 		DWGraph_DS G=new DWGraph_DS();
 		DWGraph_Algo A=new DWGraph_Algo();
@@ -19,6 +20,7 @@ public class AlgoTest
 		boolean flag=A.isConnected();
 		assertTrue(flag);
 	}
+
 	@Test
 	public void TestB() 
 	{
@@ -242,6 +244,7 @@ public class AlgoTest
 		assertEquals(A.getGraph(),A1.getGraph());
 		
 	}
+
 	@Test
 	public void TestG1()
 	{
@@ -251,6 +254,7 @@ public class AlgoTest
 		DWGraph_DS G1=(DWGraph_DS)A.copy();
 		assertEquals(5,G1.nodeSize());
 	}
+
 	@Test
 	public void TestG2()
 	{
@@ -260,6 +264,7 @@ public class AlgoTest
 		DWGraph_DS G1=(DWGraph_DS)A.copy();
 		assertEquals(12,G1.edgeSize());
 	}
+
 	@Test
 	public void TestG3()
 	{
@@ -270,6 +275,7 @@ public class AlgoTest
 		G1.removeNode(1);
 		assertEquals(8,G1.edgeSize());
 	}
+
 	@Test
 	public void TestG4()
 	{
@@ -280,6 +286,7 @@ public class AlgoTest
 		G.removeNode(1);
 		assertEquals(5,G1.nodeSize());
 	}
+
 	@Test
 	public void TestG5()
 	{
@@ -292,8 +299,4 @@ public class AlgoTest
 		G1.removeNode(1);
 		assertEquals(A.getGraph(),G1);
 	}
-	
-	
-
-
 }

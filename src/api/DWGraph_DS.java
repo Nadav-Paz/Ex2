@@ -1,10 +1,8 @@
 package api;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.json.simple.parser.JSONParser;
@@ -49,6 +47,10 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 		public NodeData(int key){
 			this(key, new Geo(), 0, 0, "");
+		}
+
+		public NodeData(int key, geo_location geo) {
+			this(key, geo, 0, 0, "");
 		}
 
 		@Override
@@ -99,7 +101,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 		@Override
 		public String toString()
 		{
-			return (String.format("{\"key\": %o, \"geo\": %s, \"tag\": %o, \"weight\": %f, \"info\": \"%s\"}", 
+			return (String.format("{\"key\": %d, \"geo\": %s, \"tag\": %d, \"weight\": %f, \"info\": \"%s\"}",
 					this.key, this.geo, this.node_tag, this.node_weight, this.node_info));
 		}
 
@@ -137,6 +139,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 		public EdgeData(node_data src, node_data dst, double weight) {
 			this(src, dst, weight, 0, "");
 		}
+
 
 //		public EdgeData(EdgeData edge) {
 //			this(new NodeData(edge.src), new NodeData(edge.dst), edge.edge_weight, edge.edge_tag, edge.edge_info);
@@ -190,37 +193,6 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 	}
 
-	private class EdgeLocation implements edge_location {
-
-		EdgeData E;
-		public edge_data getEdge()
-		{
-			if(E!=null)return E;
-			else
-			{
-				System.err.println("Null edge");
-				return null;
-			}
-		}
-		@Override
-		public double getRatio()
-		{
-			node_data src=verticies.get(E.getSrc());
-			node_data dst=verticies.get(E.getDest());
-			if(dst!=null && src!=null && !src.equals(dst))
-			{
-				geo_location srcLoc=src.getLocation();
-				geo_location srcdst=dst.getLocation();
-				return srcLoc.distance(srcdst);
-			}
-			else
-			{
-				System.err.println("null data");
-				return -1;
-			}
-		}
-	}
-
 	public DWGraph_DS(){
 		this.verticies = new HashMap<>();
 		this.edges = new HashMap<>();
@@ -242,56 +214,45 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 		try {
 			JSONObject graph = (JSONObject)parser.parse(json);
-			JSONObject nodes = (JSONObject)graph.get("nodes");
-			JSONObject edges = (JSONObject)graph.get("edges");
+			JSONArray edges = (JSONArray)graph.get("Edges");
+			JSONArray nodes = (JSONArray)graph.get("Nodes");
 
-			String s = nodes.toJSONString();
-			JSONObject node_json = (JSONObject)parser.parse(s);
+			String edge_str = edges.toJSONString();
+			String node_str = nodes.toJSONString();
 
-			for(Object o : node_json.keySet()) {
-				int key = Integer.valueOf((String)o);
-				JSONObject node_info = (JSONObject)parser.parse(((JSONObject)node_json.get(o)).toJSONString());
-				addNode(key);
-				node_data node = this.verticies.get(key);
+			for(Object o : nodes.toArray()) {
+				JSONObject node_info = (JSONObject)parser.parse(((JSONObject)o).toJSONString());
 
-				for(Object info : node_info.keySet()) {
-					if((String)info == "tag") node.setTag(Integer.valueOf((String)node_info.get(info)));
-					if((String)info == "weight") node.setWeight(Double.valueOf((String)node_info.get(info)));
-					if((String)info == "info") node.setInfo((String)node_info.get(info));
-					if((String)info == "geo") {
-						JSONObject geo = (JSONObject)parser.parse(((JSONObject)node_json.get("geo")).toJSONString());
-						int x = 0, y = 0, z = 0;
-						for(Object geo_info : geo.keySet()) {
-							if((String)geo_info == "x") x = Integer.valueOf((String)geo.get(geo_info));
-							if((String)geo_info == "y") y = Integer.valueOf((String)geo.get(geo_info));
-							if((String)geo_info == "z") z = Integer.valueOf((String)geo.get(geo_info));
-						}
-						node.setLocation(new Geo(x, y, z));
-					} 
+				int key = 0;
+				double x = 0, y = 0, z = 0;
+				for(Object param : node_info.keySet()) {
+					if(param.toString().equals("pos")) {
+						String[] coordinates = ((JSONObject) node_info).get(param).toString().split(",");
+						x = Double.parseDouble(coordinates[0]);
+						y = Double.parseDouble(coordinates[1]);
+						z = Double.parseDouble(coordinates[2]);
+					}
+					if(param.toString().equals("id")) key = Integer.parseInt(((JSONObject) node_info).get(param).toString());
 				}// end node_info for(Object info : node_info.keySet())
-			}// end node_json for(Object o : node_json.keySet()) 
 
-			s = edges.toJSONString();
-			JSONObject edge_json = (JSONObject)parser.parse(s);
-			for(Object o : edge_json.keySet()) {
-				long key = Long.valueOf((String)o);
-				JSONObject edge_info = (JSONObject)parser.parse(((JSONObject)edge_json.get(o)).toJSONString());
-				int tag = 0, src = 0, dst = 0;
+				this.mode_counter++;
+				this.verticies.put(key, new NodeData(key, new Geo(x, y, z)));
+			}// end node_json for(Object o : node_json.keySet())
+
+
+			for(Object o : edges.toArray()) {
+				JSONObject edge_info = (JSONObject)parser.parse(((JSONObject)o).toJSONString());
+				int src = 0, dst = 0;
 				double weight = 0;
-				String info = "";
 
 				for(Object param : edge_info.keySet()) {
 					if(param.toString().equals("src")) src = Integer.parseInt(edge_info.get(param).toString());
-					if(param.toString().equals("dst")) dst = Integer.parseInt(edge_info.get(param).toString());
-					if(param.toString().equals("tag")) tag = Integer.parseInt(edge_info.get(param).toString());
-					if(param.toString().equals("weight")) weight = Double.parseDouble(edge_info.get(param).toString());
-					if(param.toString().equals("info")) info = (edge_info.get(param).toString());
-				} 
+					if(param.toString().equals("w")) weight = Double.parseDouble(edge_info.get(param).toString());
+					if(param.toString().equals("dest")) dst = Integer.parseInt(edge_info.get(param).toString());
+				}
 				connect(src, dst, weight);
-				EdgeData edge = this.edges.get(key);
-				edge.setTag(tag);
-				edge.setInfo(info);
 			}
+
 		} catch (ParseException e) {
 			System.err.println("An error occured during parsing of JSON!");
 			e.printStackTrace();
@@ -367,6 +328,15 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 	public Collection<EdgeData> getE() {
 		return this.edges.values();
+	}
+
+
+	public Collection<edge_data> getEdges() {
+		Collection<edge_data> collection = new ArrayList<edge_data>(this.edges.size());
+		for(long key : this.edges.keySet()) {
+			collection.add(this.edges.get(key));
+		}
+		return collection;
 	}
 
 	@Override
@@ -493,40 +463,32 @@ public class DWGraph_DS implements directed_weighted_graph {
 	public String toJson() {
 		JSONObject json = new JSONObject();
 
-		JSONObject nodes = new JSONObject();
+		JSONArray nodes = new JSONArray();
 		for(int key : verticies.keySet()) {
 			JSONObject node_json = new JSONObject();
-			NodeData node = (NodeData)verticies.get(key);
 
-			JSONObject geo_json = new JSONObject();
-			geo_json.put("x", node.geo.x());
-			geo_json.put("y", node.geo.y());
-			geo_json.put("z", node.geo.z());
+			geo_location temp = verticies.get(key).getLocation();
+			String location = String.format("%s,%s,%s", temp.x(), temp.y(), temp.z());
+			node_json.put("pos", location);
+			node_json.put("id", key);
 
-			node_json.put("geo", geo_json);
-			node_json.put("tag", node.node_tag);
-			node_json.put("weight", node.node_weight);
-			node_json.put("info", node.node_info);
-
-			nodes.put(key, node_json);
+			nodes.add(node_json);
 		}
 
-		JSONObject edges = new JSONObject();
+		JSONArray edges = new JSONArray();
 		for(long key : this.edges.keySet()) {
 			JSONObject edge_json = new JSONObject();
 			EdgeData edge = this.edges.get(key);
 
 			edge_json.put("src", edge.src.key);
-			edge_json.put("dst", edge.dst.key);
-			edge_json.put("weight", edge.edge_weight);
-			edge_json.put("tag", edge.edge_tag);
-			edge_json.put("info", edge.edge_info);
+			edge_json.put("w", edge.edge_weight);
+			edge_json.put("dest", edge.dst.key);
 
-			edges.put(key, edge_json);
+			edges.add(edge_json);
 		}
 
-		json.put("nodes", nodes);
-		json.put("edges", edges);
+		json.put("Edges", edges);
+		json.put("Nodes", nodes);
 		return json.toJSONString();
 	}
 	

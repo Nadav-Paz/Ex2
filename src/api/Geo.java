@@ -12,7 +12,7 @@ public class Geo implements geo_location {
 
 	private double x, y, z;
 	
-	Geo(double x, double y, double z){
+	public Geo(double x, double y, double z){
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -25,7 +25,7 @@ public class Geo implements geo_location {
 	Geo(geo_location geo){
 		this(geo.x(), geo.y(), geo.z());
 	}
-	
+
 	@Override
 	public double x() {
 		return this.x;
