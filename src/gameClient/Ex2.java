@@ -28,15 +28,22 @@ public class Ex2 implements Runnable {
 
     public static void main(String[] args) {
         if (args.length == 2) {
-            level = Integer.parseInt(args[0]);
-            if (level < 0 || 23 < level) {
-                level = 0;
+            try {
+                level = Integer.parseInt(args[0]);
+                if (level < 0 || 23 < level) {
+                    level = 0;
+                }
+                if (args[1].length() == 9) {
+                    id = Long.parseLong(args[1]);
+                }
+                else {
+                    id = 205542897;
+                }
             }
-            if (args[1].length() == 9) {
-                id = Long.parseLong(args[1]);
-            }
-            else {
+            catch (Exception e) {
+                System.err.println("Illegal Parameters!");
                 id = 205542897;
+                level = 0;
             }
         }
         Thread client = new Thread(new Ex2());
