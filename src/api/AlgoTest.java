@@ -2,7 +2,6 @@ package api;
 
 import static org.junit.Assert.*;
 
-//import java.lang.annotation.*;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,7 +11,7 @@ public class AlgoTest
 {
 
 	@Test
-	public void TestA()
+	public void TestA() 
 	{
 		DWGraph_DS G=new DWGraph_DS();
 		DWGraph_Algo A=new DWGraph_Algo();
@@ -20,7 +19,6 @@ public class AlgoTest
 		boolean flag=A.isConnected();
 		assertTrue(flag);
 	}
-
 	@Test
 	public void TestB() 
 	{
@@ -49,6 +47,7 @@ public class AlgoTest
 		DWGraph_Algo A=new DWGraph_Algo();
 		A.init(G);
 		G.addNode(0);
+		G.getNode(0).setLocation(new Geo(1,1,1));
 		G.addNode(1);
 		G.connect(0,1,3);
 		G.connect(1,0,2);
@@ -162,6 +161,7 @@ public class AlgoTest
 		{
 			double W=Math.random()*10;
 			G.connect(0,i,W);
+			G.connect(i,0,W);
 			G.connect(1,i,W);
 		}
 		G.connect(1,0,1);
@@ -175,7 +175,11 @@ public class AlgoTest
 		for(int i=0;i<Num;i++)
 		{
 			double W=Math.random()*10;
-			if(i+1<Num)G.connect(i,i+1, W);
+			if(i+1<Num)
+			{
+				G.connect(i,i+1, W);
+				G.connect(i+1,i, W);
+			}
 		}
 		G.connect(0,Num-1,1);
 		return G;
@@ -244,7 +248,6 @@ public class AlgoTest
 		assertEquals(A.getGraph(),A1.getGraph());
 		
 	}
-
 	@Test
 	public void TestG1()
 	{
@@ -254,7 +257,6 @@ public class AlgoTest
 		DWGraph_DS G1=(DWGraph_DS)A.copy();
 		assertEquals(5,G1.nodeSize());
 	}
-
 	@Test
 	public void TestG2()
 	{
@@ -264,7 +266,6 @@ public class AlgoTest
 		DWGraph_DS G1=(DWGraph_DS)A.copy();
 		assertEquals(12,G1.edgeSize());
 	}
-
 	@Test
 	public void TestG3()
 	{
@@ -275,7 +276,6 @@ public class AlgoTest
 		G1.removeNode(1);
 		assertEquals(8,G1.edgeSize());
 	}
-
 	@Test
 	public void TestG4()
 	{
@@ -286,7 +286,6 @@ public class AlgoTest
 		G.removeNode(1);
 		assertEquals(5,G1.nodeSize());
 	}
-
 	@Test
 	public void TestG5()
 	{
@@ -299,4 +298,8 @@ public class AlgoTest
 		G1.removeNode(1);
 		assertEquals(A.getGraph(),G1);
 	}
+	
+	
+
+
 }

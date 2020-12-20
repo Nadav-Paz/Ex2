@@ -1,16 +1,25 @@
 package gameClient;
 import api.edge_data;
 import gameClient.util.Point3D;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-public class CL_Pokemon {
+import javax.swing.*;
+
+public class CL_Pokemon implements  Comparable<CL_Pokemon>{
 	private edge_data _edge;
 	private double _value;
 	private int _type;
 	private Point3D _pos;
 	private double min_dist;
 	private int min_ro;
-	
+	private ImageIcon bulb =new ImageIcon("Imj/bulb.png");
+	private ImageIcon Meowth =new ImageIcon("Imj/Meowth.png");
+	public ImageIcon GetIcon(int type)
+	{
+		if(type<0)return bulb;
+		else return Meowth;
+	}
 	public CL_Pokemon(Point3D p, int t, double v, double s, edge_data e) {
 		_type = t;
 	//	_speed = s;
@@ -62,5 +71,13 @@ public class CL_Pokemon {
 
 	public void setMin_ro(int min_ro) {
 		this.min_ro = min_ro;
+	}
+
+	@Override
+	public int compareTo(@NotNull CL_Pokemon o)
+	{
+		if(o._value<this._value)return -1;
+		else if (o._value>this._value)return 1;
+		else return 0;
 	}
 }

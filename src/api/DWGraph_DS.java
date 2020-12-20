@@ -14,7 +14,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 	private HashMap <Integer, node_data> verticies;
 	private HashMap <Long, EdgeData> edges;
-//	private int id;
+	//	private int id;
 	private int mode_counter;
 
 	public class NodeData implements node_data, Comparable<NodeData>{
@@ -106,7 +106,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 		}
 
 		@Override
-		public int compareTo(NodeData N) 	 
+		public int compareTo(NodeData N)
 		{
 			if(node_weight<N.getWeight()) return -1;
 			else if(node_weight>N.getWeight())return 1;
@@ -187,7 +187,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 
 		@Override
 		public String toString() {
-			return String.format("{\"src\" = %o, \"dst\"=  %o, \"weight\" = %f, \"tag\" = %o, \"info\": \"%s\"}", 
+			return String.format("{\"src\" = %o, \"dst\"=  %o, \"weight\" = %f, \"tag\" = %o, \"info\": \"%s\"}",
 					this.src.key, this.dst.key, this.edge_weight, this.edge_tag, this.edge_info);
 		}
 
@@ -206,6 +206,21 @@ public class DWGraph_DS implements directed_weighted_graph {
 			addNode(node);
 		for(EdgeData edge : graph.getE())
 			connect(edge);
+	}
+	public DWGraph_DS  CopyOpsiteEdgeGraph(DWGraph_DS graph)
+	{
+		DWGraph_DS G1=new DWGraph_DS();
+		for(node_data node : graph.getV())
+		{
+			G1.addNode(node);
+		}
+		for (edge_data edge : graph.getE())
+			{
+				int Src = edge.getSrc();
+				int Dest = edge.getDest();
+				G1.connect(Dest,Src,edge.getWeight());
+			}
+		return G1;
 	}
 
 	public DWGraph_DS(String json) {
@@ -265,7 +280,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 	}
 
 	@Override
-	public edge_data getEdge(int src, int dest) {		
+	public edge_data getEdge(int src, int dest) {
 		return this.edges.get(keyCalcuclate(src, dest));
 	}
 
@@ -302,10 +317,10 @@ public class DWGraph_DS implements directed_weighted_graph {
 		this.mode_counter++;
 	}
 
-	public void connect(EdgeData e) 
+	public void connect(EdgeData e)
 	{
 		if(e==null || !canEdge(e.src.key, e.dst.key))return;
-		else 
+		else
 		{
 			connect(e.getSrc(),e.getDest(),e.getWeight());
 		}
@@ -368,7 +383,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 		}
 
 		for(long l : node.out_set) {
-			EdgeData edge = (EdgeData)this.edges.remove(l);	
+			EdgeData edge = (EdgeData)this.edges.remove(l);
 			edge.dst.in_set.remove(l);
 			this.mode_counter++;
 		}
@@ -380,7 +395,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 	}
 
 	@Override
-	public edge_data removeEdge(int src, int dest) 
+	public edge_data removeEdge(int src, int dest)
 	{
 		EdgeData E=(EdgeData)this.getEdge(src, dest) ;
 		if(E!=null)
@@ -415,7 +430,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 		return str;
 	}
 
-	public static long keyCalcuclate(int src, int dst) 
+	public static long keyCalcuclate(int src, int dst)
 	{
 		return ((long)src << 32 | dst);
 	}
@@ -491,7 +506,7 @@ public class DWGraph_DS implements directed_weighted_graph {
 		json.put("Nodes", nodes);
 		return json.toJSONString();
 	}
-	
+
 	public String GetData()
 	{
 		return "["+nodeSize()+","+edgeSize()+"]";

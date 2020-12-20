@@ -12,9 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * This class represents a multi Agents Arena which move on a graph - grabs Pokemons and avoid the Zombies.
@@ -30,7 +28,8 @@ public class Arena {
 	private static Point3D MIN = new Point3D(0, 100,0);
 	private static Point3D MAX = new Point3D(0, 100,0);
 
-	public Arena() {;
+	public Arena()
+	{
 		_info = new ArrayList<String>();
 	}
 	private Arena(directed_weighted_graph g, List<CL_Agent> r, List<CL_Pokemon> p) {
@@ -108,10 +107,18 @@ public class Arena {
 				CL_Pokemon f = new CL_Pokemon(new Point3D(p), t, v, 0, null);
 				ans.add(f);
 			}
+			Collections.sort(ans, new Comparator<CL_Pokemon>() {
+				@Override
+				public int compare(CL_Pokemon o1, CL_Pokemon o2) {
+					return o1.compareTo(o2);
+				}
+			}
+			);
 		}
 		catch (JSONException e) {e.printStackTrace();}
 		return ans;
 	}
+
 	public static void updateEdge(CL_Pokemon fr, directed_weighted_graph g) {
 		//	oop_edge_data ans = null;
 		Iterator<node_data> itr = g.getV().iterator();

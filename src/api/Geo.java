@@ -1,7 +1,7 @@
 package api;
 
 /**
- * 
+ *
  */
 
 /**
@@ -11,17 +11,17 @@ package api;
 public class Geo implements geo_location {
 
 	private double x, y, z;
-	
+
 	public Geo(double x, double y, double z){
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
-	
+
 	Geo(){
 		this(0,0,0);
 	}
-	
+
 	Geo(geo_location geo){
 		this(geo.x(), geo.y(), geo.z());
 	}
@@ -49,7 +49,7 @@ public class Geo implements geo_location {
 		double dis = dx * dx + dy * dy + dz * dz;
 		return Math.sqrt(dis);
 	}
-	
+
 	public double distance() {
 		return distance(new Geo());
 	}
