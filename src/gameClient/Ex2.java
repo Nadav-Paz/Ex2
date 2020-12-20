@@ -29,7 +29,15 @@ public class Ex2 implements Runnable {
     public static void main(String[] args) {
         if (args.length == 2) {
             level = Integer.parseInt(args[0]);
-            id = Long.parseLong(args[1]);
+            if (level < 0 || 23 < level) {
+                level = 0;
+            }
+            if (args[1].length() == 9) {
+                id = Long.parseLong(args[1]);
+            }
+            else {
+                id = 205542897;
+            }
         }
         Thread client = new Thread(new Ex2());
         client.start();
@@ -142,6 +150,7 @@ public class Ex2 implements Runnable {
             game = Game_Server_Ex2.getServer(Ex2.level);
             game.login(Ex2.id);
         }
+
         String graphData = game.getGraph();
         directed_weighted_graph graph = new DWGraph_DS(graphData);
         String Pokemons = game.getPokemons();
